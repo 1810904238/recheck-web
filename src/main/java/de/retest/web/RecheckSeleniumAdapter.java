@@ -40,7 +40,8 @@ import de.retest.web.util.SeleniumWrapperUtil.WrapperOf;
 
 public class RecheckSeleniumAdapter implements RecheckAdapter {
 
-	private static final String GET_ALL_ELEMENTS_BY_PATH_JS_PATH = "/javascript/getAllElementsByPath.js";
+	private static final String GET_ALL_ELEMENTS_BY_PATH_JS_PATH =
+			"/META-INF/resources/webjars/recheck-web-js/1.0.11/dist/src/script.js";
 
 	private static final Logger logger = LoggerFactory.getLogger( RecheckSeleniumAdapter.class );
 
