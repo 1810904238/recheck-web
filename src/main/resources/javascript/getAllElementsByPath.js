@@ -281,70 +281,29 @@ function isDisabled(node) {
     return node.disabled ? true : false;
 }
 
-function isClickable(node) {
-	const slack = 2;
-    // is element visible by styles
-    var styles = getComputedStyleSafely(node);
-    if (!(styles.visibility !== 'hidden' && styles.display !== 'none')) {
-        return false;
-    }
-
+// check if element is behind another one
+function isCovered(node) {
     if (typeof node.getBoundingClientRect === "function") {
-	    // is the element behind another element
 	    var boundingRect = node.getBoundingClientRect();
+
+	    var boundingLeft = boundingRect.left + 2;
+	    var boundingRight = boundingRect.right - 2;
+	    var boundingTop = boundingRect.top + 2;
+	    var boundingBottom = boundingRect.bottom - 2;
 	
-	    // adjust coordinates to get more accurate results
-	    var left = boundingRect.left + slack;
-	    var right = boundingRect.right - slack;
-	    var top = boundingRect.top + slack;
-	    var bottom = boundingRect.bottom - slack;
-	
-	    var topLeft = document.elementFromPoint(left, top);
-	    var topRight = document.elementFromPoint(right, top);
-	    var bottomLeft = document.elementFromPoint(left, bottom);
-	    var bottomRight = document.elementFromPoint(right, bottom);
-	    while (!node.contains(topLeft) || !node.contains(topRight) ||
-	    	!node.contains(bottomLeft) || !node.contains(bottomRight)) {
-	        if (!node.contains(topLeft)) {
-	        	left = topLeft.getBoundingClientRect().left + slack;
-	        	top = topLeft.getBoundingClientRect().top + slack;
-	        	if (left > right && top < bottom) {
-	        		return false;
-	        	}
-	        	topLeft = document.elementFromPoint(left, top);
-	        	continue;
-	        }
-	        if (!node.contains(topRight)) {
-	        	right = topRight.getBoundingClientRect().right - slack;
-	        	top = topRight.getBoundingClientRect().top + slack;
-	        	if (left > right && top < bottom) {
-	        		return false;
-	        	}
-	        	topRight = document.elementFromPoint(right, top);
-	        	continue;
-	        }
-	        if (!node.contains(bottomLeft)) {
-	        	left = bottomLeft.getBoundingClientRect().left + slack;
-	        	bottom = bottomLeft.getBoundingClientRect().bottom - slack;
-	        	if (left > right && top < bottom) {
-	        		return false;
-	        	}
-	        	bottomLeft = document.elementFromPoint(left, bottom);
-	        	continue;
-	        }
-	        if (!node.contains(bottomRight)) {
-	        	right = bottomRight.getBoundingClientRect().right - slack;
-	        	bottom = bottomRight.getBoundingClientRect().bottom - slack;
-	        	if (left > right && top < bottom) {
-	        		return false;
-	        	}
-	        	bottomRight = document.elementFromPoint(right, bottom);
-	        	continue;
-	        }
+	    var topLeft = document.elementFromPoint(boundingLeft, boundingTop);
+	    var topRight = document.elementFromPoint(boundingRight, boundingTop);
+	    var bottomLeft = document.elementFromPoint(boundingLeft, boundingBottom);
+	    var bottomRight = document.elementFromPoint(boundingRight, boundingBottom);
+	    if ((topLeft != null && !node.contains(topLeft))
+	    	|| (topRight != null && !node.contains(topRight))
+	    	|| (bottomLeft != null && !node.contains(bottomLeft)) 
+	    	|| (bottomRight != null && !node.contains(bottomRight))) {
+	        return true;
 	    }
     }
 
-    return true;
+    return false;
 }
 
 //extract *given* CSS style attributes
@@ -362,7 +321,7 @@ function transform(node) {
         "value": node.value,
         "tabindex": node.tabIndex,
         "shown": isShown(node),
-        "isClickable": isClickable(node)
+        "covered": isCovered(node)
     };
     
     if (node.nodeType == TEXT_NODE) {
