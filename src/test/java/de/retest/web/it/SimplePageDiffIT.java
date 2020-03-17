@@ -3,9 +3,10 @@ package de.retest.web.it;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 
 import de.retest.recheck.Recheck;
@@ -14,21 +15,23 @@ import de.retest.web.testutils.PageFactory;
 import de.retest.web.testutils.WebDriverFactory;
 import de.retest.web.testutils.WebDriverFactory.Driver;
 
-public class SimplePageDiffIT {
+class SimplePageDiffIT {
 
 	WebDriver driver;
 	Recheck re;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		re = new RecheckImpl();
 		driver = WebDriverFactory.driver( Driver.CHROME );
 	}
 
+	@Disabled( "Unignore as soon as TODO from getAllElementsByPath.js is addressed." )
 	@Test
 	public void testSimpleChange() throws Exception {
 		re.startTest();
 
+		// Generate golden master using simple-page.html
 		driver.get( PageFactory.toPageUrlString( "simple-page-diff.html" ) );
 
 		re.check( driver, "open" );
@@ -52,7 +55,7 @@ public class SimplePageDiffIT {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		driver.quit();
 		re.cap();
