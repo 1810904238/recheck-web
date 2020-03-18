@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -67,6 +68,16 @@ public class IsCoveredIT {
 		rootElement.stream().findFirst()
 				.ifPresent( element -> assertThat( element.getAttributeValue( "covered" ) ).isEqualTo( "false" ) );
 		coveredByChildElement.click();
+	}
+
+	@Test
+	void zero_width_element_should_not_be_clickable() {
+		driver.get( page( COVERED_PAGE ) );
+		final WebElement zeroWidthElement = driver.findElement( By.id( "zero-width-element" ) );
+		final Set<RootElement> rootElement = recheckAdapter.convert( zeroWidthElement );
+		rootElement.stream().findFirst()
+				.ifPresent( element -> assertThat( element.getAttributeValue( "covered" ) ).isEqualTo( "true" ) );
+		assertThatCode( () -> zeroWidthElement.click() ).isInstanceOf( ElementNotInteractableException.class );
 	}
 
 	@Test
